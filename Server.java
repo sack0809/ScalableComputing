@@ -16,8 +16,8 @@ public class Server {
 	// to display time
 	private SimpleDateFormat sdf;
 	// the port number to listen for connection
-	private int port;
-	private String IP;
+	private static int port;
+	private static String IP;
 	// the boolean that will be turned of to stop the server
 	private boolean keepGoing;
 	
@@ -31,6 +31,23 @@ public class Server {
 	/*public Server(int port) {
 		this(port, null);
 	}*/
+	
+	public static boolean isOnline() {
+	    boolean b = true;
+	    try {
+	         String host = "localhost";
+	         InetAddress ip = InetAddress.getByName(host);
+	         System.out.println("IP Address : " + ip.getHostAddress());
+	         System.out.println("Hostname : " + ip.getHostName());
+	         System.out.println("Student ID : 17311921");
+	      } catch(UnknownHostException uhe) {
+	         System.out.println("Host Not Found");
+	      } catch(Exception e) {
+	         System.out.println(e);
+	      }
+
+	  return b;
+	}
 	
 	public Server(int port ) {
 		// GUI or not
@@ -53,13 +70,21 @@ public class Server {
 		{
 			// the socket used by the server
 			ServerSocket serverSocket = new ServerSocket(port);
-
+             
 			// infinite loop to wait for connections
 			while(keepGoing) 
 			{
 				// format message saying we are waiting
 				display("Server waiting for Clients on port " + port + ".");
+                 //Scanner scan = new Scanner (System.in) ;
+				BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+				StringBuilder HelloText = new StringBuilder(br.readLine());
 				
+				String[] s = HelloText.toString().split(" ");
+	             if(s[0].equalsIgnoreCase("hello")) {
+	            	 System.out.println(HelloText);
+				System.out.println(isOnline());
+	             }
 				Socket socket = serverSocket.accept();  	// accept connection
 				// if I was asked to stop
 				if(!keepGoing)
@@ -119,24 +144,6 @@ public class Server {
 			System.out.println(time);
 		else
 			sg.appendEvent(time + "\n");*/
-	}
-	
-	
-	private  void Address () {
-		
-			try {
-		         String host = "localhost";
-		         InetAddress ip = InetAddress.getByName(host);
-		         System.out.println("IP Address : " + ip.getHostAddress());
-		         System.out.println("Hostname : " + ip.getHostName());
-		      } 
-			catch(UnknownHostException uhe) {
-		         System.out.println("Host Not Found");
-		      } 
-			catch(Exception e) {
-		         System.out.println(e) ;
-		      }
-		      
 	}
 	
 	/*
@@ -362,6 +369,8 @@ public class Server {
 			}
 			return true;
 		}
+		
+		
 	}
 }
 
