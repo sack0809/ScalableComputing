@@ -17,8 +17,11 @@ public class Server {
 	private SimpleDateFormat sdf;
 	// the port number to listen for connection
 	private int port;
+	private String IP;
 	// the boolean that will be turned of to stop the server
 	private boolean keepGoing;
+	
+	private String Address;
 	
 
 	/*
@@ -29,15 +32,18 @@ public class Server {
 		this(port, null);
 	}*/
 	
-	public Server(int port) {
+	public Server(int port ) {
 		// GUI or not
 		//this.sg = sg;
 		// the port
+		
 		this.port = port;
+		
 		// to display hh:mm:ss
 		sdf = new SimpleDateFormat("HH:mm:ss");
 		// ArrayList for the Client list
 		al = new ArrayList<ClientThread>();
+		
 	}
 	
 	public void start() {
@@ -61,6 +67,7 @@ public class Server {
 				ClientThread t = new ClientThread(socket);  // make a thread of it
 				al.add(t);									// save it in the ArrayList
 				t.start();
+				
 			}
 			// I was asked to stop
 			try {
@@ -90,7 +97,7 @@ public class Server {
     /*
      * For the GUI to stop the server
      */
-	protected void stop() {
+	/*protected void stop() {
 		keepGoing = false;
 		// connect to myself as Client to exit statement 
 		// Socket socket = serverSocket.accept();
@@ -100,18 +107,38 @@ public class Server {
 		catch(Exception e) {
 			// nothing I can really do
 		}
-	}
+	}*/
 	/*
 	 * Display an event (not a message) to the console or the GUI
 	 */
 	private void display(String msg) {
 		String time = sdf.format(new Date()) + " " + msg;
 		System.out.println(time);
+		
 		/*if(sg == null)
 			System.out.println(time);
 		else
 			sg.appendEvent(time + "\n");*/
 	}
+	
+	
+	private  void Address () {
+		
+			try {
+		         String host = "localhost";
+		         InetAddress ip = InetAddress.getByName(host);
+		         System.out.println("IP Address : " + ip.getHostAddress());
+		         System.out.println("Hostname : " + ip.getHostName());
+		      } 
+			catch(UnknownHostException uhe) {
+		         System.out.println("Host Not Found");
+		      } 
+			catch(Exception e) {
+		         System.out.println(e) ;
+		      }
+		      
+	}
+	
 	/*
 	 *  to broadcast a message to all Clients
 	 */
@@ -120,6 +147,7 @@ public class Server {
 		String time = sdf.format(new Date());
 		String messageLf = time + " " + message + "\n";
 		System.out.print(messageLf);
+		
 		// display message on console or GUI
 		/*if(sg == null)
 			System.out.print(messageLf);
@@ -184,6 +212,7 @@ public class Server {
 
 	/** One instance of this thread will run for each client */
 	class ClientThread extends Thread {
+		
 		// the socket where to listen/talk
 		Socket socket;
 		ObjectInputStream sInput;
@@ -197,7 +226,7 @@ public class Server {
 		// the date I connect
 		String date;
 
-		// Constructore
+		// Constructor
 		ClientThread(Socket socket) {
 			// a unique id
 			id = ++uniqueId;
@@ -209,9 +238,12 @@ public class Server {
 				// create output first
 				sOutput = new ObjectOutputStream(socket.getOutputStream());
 				sInput  = new ObjectInputStream(socket.getInputStream());
-				// read the username
+				
+				
 				username = (String) sInput.readObject();
 				display(username + " just connected.");
+				
+				
 			}
 			catch (IOException e) {
 				display("Exception creating new Input/output Streams: " + e);
@@ -249,6 +281,28 @@ public class Server {
 				case ChatMessage.MESSAGE:
 					broadcast(username + ": " + message);
 					break;
+				case ChatMessage.HELLO:
+					  
+					
+					try {
+				         String host = "localhost";
+				         InetAddress ip = InetAddress.getByName(host);
+				         IP=  ip.getHostAddress();
+				         //System.out.println("Hostname : " + ip.getHostName());
+				      } catch(UnknownHostException uhe) {
+				         System.out.println("Host Not Found");
+				      } catch(Exception e) {
+				         System.out.println(e);
+				      }
+					// Address(InetAddress.getLocalHost());
+					 
+					// String host = "localized";
+			        // InetAddress ip = InetAddress.getByName(host);
+			        // System.out.println("IP Address : " + ip.getHostAddress());
+					 writeMsg("HELLO"+"   " +"IP: " + IP +" "+ "PortNumber: " + port +"   "+ "Student Id = 17311921"  );
+					 break;
+					 //System.out.println("Student Id = 17311921");
+					  
 				case ChatMessage.LOGOUT:
 					display(username + " disconnected with a LOGOUT message.");
 					keepGoing = false;
@@ -269,6 +323,8 @@ public class Server {
 			close();
 		}
 		
+		
+
 		// try to close everything
 		private void close() {
 			// try to close the connection
