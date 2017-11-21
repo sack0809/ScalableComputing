@@ -11,12 +11,20 @@ public class Client  {
 	private ObjectInputStream sInput;		// to read from the socket
 	private ObjectOutputStream sOutput;		// to write on the socket
 	private Socket socket;
-
+	static OutputStream os ;
+    static OutputStreamWriter osw;
+    static BufferedWriter bw;
+    private static testChatRoom test;
+    static InputStream is ;
+    static InputStreamReader isr;
+   static BufferedReader br;
+	
+	
 	// if I use a GUI or not
 	//private ClientGUI cg;
 	
 	// the server, the port and the username
-	private String server, username;
+	public String server, username;
 	private int port;
 
 	/*
@@ -65,8 +73,12 @@ public class Client  {
 		/* Creating both Data Stream */
 		try
 		{
-			sInput  = new ObjectInputStream(socket.getInputStream());
-			sOutput = new ObjectOutputStream(socket.getOutputStream());
+			os = socket.getOutputStream();
+            osw = new OutputStreamWriter(os);
+            bw = new BufferedWriter(osw);
+            is = socket.getInputStream();
+            isr = new InputStreamReader(is);
+            br = new BufferedReader(isr);
 		}
 		catch (IOException eIO) {
 			display("Exception creating new Input/output Streams: " + eIO);
@@ -79,7 +91,9 @@ public class Client  {
 		// will send as a String. All other messages will be ChatMessage objects
 		try
 		{
-			sOutput.writeObject(username);
+			bw.write(username +"\n");
+			bw.flush();
+			
 		}
 		catch (IOException eIO) {
 			display("Exception doing login : " + eIO);
@@ -104,6 +118,17 @@ public class Client  {
 	/*
 	 * To send a message to the server
 	 */
+	void sendmessage(String s) {
+		try {
+			bw.write(s + "\n");
+			bw.flush();
+		}
+		catch(IOException e) {
+			display("Exception writing to server: " + e);
+		}
+		
+	}
+	
 	void sendMessage(ChatMessage msg) {
 		try {
 			sOutput.writeObject(msg);
@@ -118,6 +143,16 @@ public class Client  {
 	 * Close the Input/Output streams and disconnect not much to do in the catch clause
 	 */
 	private void disconnect() {
+		
+
+		try { 
+			if(isr != null) isr.close();
+		}catch(Exception e) {} 
+		
+
+		try { 
+			if(osw != null) osw.close();
+		}catch(Exception e) {} 
 		try { 
 			if(sInput != null) sInput.close();
 		}
@@ -195,27 +230,32 @@ public class Client  {
 		
 		// wait for messages from user
 		Scanner scan = new Scanner(System.in);
+		
 		// loop forever for message from the user
 		while(true) {
 			System.out.print("> ");
-			// read message from user
+			// read message from u
 			String msg = scan.nextLine();
+			
 			// logout if message is LOGOUT
-			if(msg.equalsIgnoreCase("LOGOUT")) {
-				client.sendMessage(new ChatMessage(ChatMessage.LOGOUT, ""));
+			if(msg.equalsIgnoreCase("ListRooms")) {
+				client.sendmessage("LISTROOMS");
 				// break to do the disconnect
-				break;
+				
 			}
 			// message WhoIsIn
 			else if(msg.equalsIgnoreCase("WHOISIN")) {
-				client.sendMessage(new ChatMessage(ChatMessage.WHOISIN, ""));				
+				client.sendmessage("I am here");				
+			}
+			else if(msg.equalsIgnoreCase("JOIN")) {
+				client.sendmessage("Join:Room1");				
 			}
 			else {				// default to ordinary message
-				client.sendMessage(new ChatMessage(ChatMessage.MESSAGE, msg));
+				client.sendmessage("I am in Main");
 			}
 		}
 		// done disconnect
-		client.disconnect();	
+		//client.disconnect();	
 	}
 
 	/*
@@ -227,7 +267,7 @@ public class Client  {
 		public void run() {
 			while(true) {
 				try {
-					String msg = (String) sInput.readObject();
+					String msg = br.readLine();
 					// if console mode print the message and add back the prompt
 					System.out.println(msg);
 					System.out.print("> ");
@@ -246,8 +286,7 @@ public class Client  {
 					break;
 				}
 				// can't happen with a String object but need the catch anyhow
-				catch(ClassNotFoundException e2) {
-				}
+				
 			}
 		}
 	}
