@@ -91,7 +91,7 @@ public class Client  {
 		// will send as a String. All other messages will be ChatMessage objects
 		try
 		{
-			bw.write(username +"\n");
+			bw.write("USER:"+ username +"\n");
 			bw.flush();
 			
 		}
@@ -249,6 +249,11 @@ public class Client  {
 			}
 			else if(msg.equalsIgnoreCase("JOIN")) {
 				client.sendmessage("Join:Room1");				
+			}else if(msg.equalsIgnoreCase("LEAVE")) {
+				client.sendmessage("LEAVE:Room1");				
+			}
+			else if(msg.equalsIgnoreCase("CREATE")) {
+				client.sendmessage("Create:Room1");				
 			}
 			else {				// default to ordinary message
 				client.sendmessage("I am in Main");
