@@ -242,15 +242,24 @@ public class Client  {
 				client.sendmessage("LISTROOMS");
 				// break to do the disconnect
 				
+			}else if(msg.equalsIgnoreCase("HELO BASE_TEST")) {
+				client.sendmessage("HELO BASE_TEST");				
 			}
 			// message WhoIsIn
 			else if(msg.equalsIgnoreCase("WHOISIN")) {
 				client.sendmessage("I am here");				
 			}
-			else if(msg.equalsIgnoreCase("JOIN")) {
-				client.sendmessage("Join:Room1");				
-			}else if(msg.equalsIgnoreCase("LEAVE")) {
-				client.sendmessage("LEAVE:Room1");				
+			else if(msg.startsWith("JOIN_CHATROOM")) {
+				  
+				client.sendmessage("JOIN_CHATROOM:ROOM1");
+				client.sendmessage("CLIENT_IP:");
+				client.sendmessage("PORT:");
+				client.sendmessage("CLIENT_NAME:" +userName);
+				
+			}else if(msg.startsWith("LEAVE")) {
+				client.sendmessage("LEAVE_CHATROOM:ROOM1");
+				client.sendmessage("JOIN_ID:");
+				client.sendmessage("CLIENT_NAME:"+userName);
 			}
 			else if(msg.equalsIgnoreCase("CREATE")) {
 				client.sendmessage("Create:Room1");				
@@ -259,7 +268,7 @@ public class Client  {
 				client.sendmessage("Chat starts");				
 			}
 			else {				// default to ordinary message
-				client.sendmessage("CLient: I am in this Room");
+				client.sendmessage("Client: I am in this Room");
 			}
 		}
 		// done disconnect
