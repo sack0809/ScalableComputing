@@ -62,7 +62,7 @@ import servidor.Servidor;
 			
 		        // Wait to receive the client login message
 		        String login = recieveMsg ();
-		        System.out.println(login);
+		        System.out.println("Message received from client is "+login);
 		        // Check that the login message is correct
 		        if (! login.startsWith ("USER")) {
 		            // Disconnect the client if there is an error
@@ -98,7 +98,7 @@ import servidor.Servidor;
 		            do {
 		                // We are waiting to receive a message from the client
 		                String packet = recieveMsg ();
-
+		                System.out.println("Message received from client is "+packet);
 		                // If the package is not empty, we analyze it
 		                if (packet != null &&! packet.isEmpty ()) {
 		                  	analyzeMessage (packet);
@@ -496,8 +496,10 @@ import servidor.Servidor;
 		                	writeMsg("500 There is no room called " + p[1]);
 		                }
 		            }
+	               }else if(msg.startsWith("Chat"))
+	               {
+	            	   testChatRoom.broadcast("Message from Client1"+msg);
 	               }
-
 	            }
  	
 		
@@ -591,7 +593,7 @@ import servidor.Servidor;
 
 	public void sendUserList () {
         StringBuilder strb = new StringBuilder ();
-        strb.append ("LIST:");
+        strb.append ("LIST: ");
         for (ClientThread usr:testChatRoom.getUsers()) {
             strb.append (usr.getUsername ());
             strb.append ("");

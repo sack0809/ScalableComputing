@@ -255,8 +255,11 @@ public class Client  {
 			else if(msg.equalsIgnoreCase("CREATE")) {
 				client.sendmessage("Create:Room1");				
 			}
+			else if(msg.equalsIgnoreCase("CHAT")) {
+				client.sendmessage("Chat starts");				
+			}
 			else {				// default to ordinary message
-				client.sendmessage("I am in Main");
+				client.sendmessage("CLient: I am in this Room");
 			}
 		}
 		// done disconnect
