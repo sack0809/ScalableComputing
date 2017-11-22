@@ -6,7 +6,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -55,6 +57,31 @@ import servidor.Servidor;
 	        br = new BufferedReader(new InputStreamReader(s.getInputStream()));
 	        bw = new BufferedWriter(new PrintWriter(s.getOutputStream()));
 	    }
+		
+		public  String isOnline() {
+			   // boolean b = true;
+			    
+			    //Scanner serverTest=new Scanner(System.in);
+			     //String tmp=serverTest.nextLine();
+			     //if (tmp.equalsIgnoreCase("Hello Server")) {
+			    int portNumber = 1500;
+			   
+			    try {
+			         String host = "localhost";
+			         InetAddress ip = InetAddress.getByName(host);
+			         writeMsg("HELO BASE_TEST");
+			         writeMsg("IP Address : " + ip.getHostAddress());
+			         writeMsg("Port:"+portNumber);
+			        // System.out.println("Hostname : " + ip.getHostName());
+			         writeMsg("Student ID : 17311921");
+			      } catch(UnknownHostException uhe) {
+			         System.out.println("Host Not Found");
+			      } catch(Exception e) {
+			         System.out.println(e);
+			      }
+			     //}
+			  return "Success";
+			}
 
 		@Override
 		public void run() {
@@ -98,7 +125,7 @@ import servidor.Servidor;
 		            do {
 		                // We are waiting to receive a message from the client
 		                String packet = recieveMsg ();
-		                System.out.println("Message received from client is "+packet);
+		                System.out.println(packet);
 		                // If the package is not empty, we analyze it
 		                if (packet != null &&! packet.isEmpty ()) {
 		                  	analyzeMessage (packet);
@@ -389,7 +416,7 @@ import servidor.Servidor;
 	                }
 	               //bw.write ("=========================");
 	                //bw.flush();
-			} else if (msg.startsWith("J")) { //Petición de entrada a una sala existente
+			} else if (msg.startsWith("JOIN_CHATROOM")) { //Petición de entrada a una sala existente
 	            String[] p;
 	            p = msg.split(":");
 	            
@@ -397,10 +424,37 @@ import servidor.Servidor;
 	            	writeMsg("500 Sintaxis incorrecta");
 	                
 	            } else {
+	            	  if (! Server.existRoom (new testChatRoom (p [1]))) {
+                    testChatRoom sl = null;
+                    // Room without password (1 parameter)
+                    if (p.length == 2) {
+                        // We created the room
+                        sl = new testChatRoom (p [1]);
+                    }/* else if (p.length == 3) {// Room with password (2 parameters)
+                        // We created the room
+                        sl = new testChatRoom (p [1], p [2]);
+                    }*/
+                    if (sl!= null) {
+                        // We add the room to the list of rooms
+                        Server.addRoom (sl);
+                        // We take the user out of the current room
+                        testChatRoom.exit (this);
+                        // We put it in the new room
+                        sl.enter (this);
+                        // We change the room in the user
+                        testChatRoom = sl;
+                        // We send the name of the new room to the user
+                        writeMsg ("JOINED_CHATROOM:" + sl.getName ());
+                        writeMsg ("SERVER_IP:0");
+                        writeMsg ("PORT: 0 " );
+                        writeMsg ("ROOM_REF:" + Server.getRoomRef (sl));
+                        writeMsg ("JOIN_ID:" + Server.joinId() );
+                        // We update the list of users for all users of the room
+                        testChatRoom.updateListedUsers();
+                    }
+                }  else 
 	                //Comprobamos que la sala existe
-	                if (Server.existRoom(new testChatRoom(p[1]))) {
-	                  
-	                    
+	                 {
 	               // 	Received 1 parameter (room name)
 	                        if (p.length == 2) {
 	                            //Obtenemos la sala a partir del nombre
@@ -413,18 +467,22 @@ import servidor.Servidor;
 	                                sl.enter(this);
 	                                //Cambiamos la sala en el usuario
 	                                testChatRoom = sl;
+	                                writeMsg ("JOINED_CHATROOM:" + sl.getName ());
+	                                writeMsg ("SERVER_IP:0");
+	                                writeMsg ("PORT: 0 " );
+	                                writeMsg ("ROOM_REF:" + Server.getRoomRef (sl));
+	                                writeMsg ("JOIN_ID:" + Server.joinId() );
+	                                
 	                                //Enviamos el nombre de la sala
-	                                writeMsg("SALA " + testChatRoom.getName());
+	                                writeMsg("Room Name " + testChatRoom.getName());
 	                                //Actualizamos el listado de usuarios para todos los usuarios de la sala
 	                                testChatRoom.updateListedUsers();
 	                           
 	                        } 
 	                     
-	                } else { //No existe la sala
-	                	writeMsg("500 There is no room called " + p[1]);
-	                }
+	                } 
 	            }
-	        }else if (msg.startsWith ("Create")) {// Request to create a new room
+	        }/*else if (msg.startsWith ("Create")) {// Request to create a new room
 	                   String [] p;
 	                   p = msg.split (":");
 	                   
@@ -439,10 +497,10 @@ import servidor.Servidor;
 	                           if (p.length == 2) {
 	                               // We created the room
 	                               sl = new testChatRoom (p [1]);
-	                           }/* else if (p.length == 3) {// Room with password (2 parameters)
+	                           } else if (p.length == 3) {// Room with password (2 parameters)
 	                               // We created the room
 	                               sl = new testChatRoom (p [1], p [2]);
-	                           }*/
+	                           }
 	                           if (sl!= null) {
 	                               // We add the room to the list of rooms
 	                               Server.addRoom (sl);
@@ -461,8 +519,9 @@ import servidor.Servidor;
 	                    	   writeMsg ("500 already exists a room with that name");
 	                       }
 	                   }
-	               }else if (msg.startsWith("L")) { //Petición de entrada a una sala existente
-	   	            String[] p;
+	               }*/else if (msg.startsWith("L")) { //Petición de entrada a una sala existente
+	   	           System.out.println(msg); 
+	            	   String[] p;
 		            p = msg.split(":");
 		            
 		            if (p.length > 3) {
@@ -499,6 +558,10 @@ import servidor.Servidor;
 	               }else if(msg.startsWith("Chat"))
 	               {
 	            	   testChatRoom.broadcast("Message from Client1"+msg);
+	               }
+	               else if(msg.startsWith("HELO BASE_TEST"))
+	               {
+	            	   isOnline();
 	               }
 	            }
  	
