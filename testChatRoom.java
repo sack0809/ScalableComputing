@@ -20,6 +20,7 @@ public class testChatRoom {
 	  public String getName () {
               return this.name;
           }
+	  
 	  public void setName (String name) {
           this.name = name;
       }
@@ -48,7 +49,7 @@ public class testChatRoom {
 		  
 		  //System.out.println(u.getUsername());
 		if (existsUser(u)) {// We remove it from the user list of the
-			System.out.println(" getting in ");
+			//System.out.println(" getting in ");
 			//System.out.println(u.getUsername());
 			//System.out.println(getUsers ());
 			broadcast(u.getUsername()+"  " +"to come out of the room"+" "+ this.getName());
@@ -63,9 +64,9 @@ public class testChatRoom {
 
 	  
 	  public boolean existsUser(ClientThread u) {
-			System.out.println("In Exists");
+			//System.out.println("In Exists");
 	        for (ClientThread usr : users) {
-	        	System.out.println("In for loop");
+	        	//System.out.println("In for loop");
 	            if (usr.getUsername().equalsIgnoreCase(u.getUsername())) {
 	                return true;
 	            }
