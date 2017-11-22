@@ -10,7 +10,9 @@ import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import servidor.Log;
 import servidor.Sala;
+import servidor.Servidor;
 
 
 
@@ -43,6 +45,8 @@ import servidor.Sala;
 		
 		public ClientThread(Socket s, testChatRoom testChatRoom) throws IOException {
 	        this.testChatRoom = testChatRoom;
+	        socket=s;
+	       // this.username=;	
 	        //this.loginTime = System.currentTimeMillis();
 	        //this.IP = s.getInetAddress().getHostAddress();
 	        //this.ping = 0;
@@ -60,14 +64,14 @@ import servidor.Sala;
 		        String login = recieveMsg ();
 		        System.out.println(login);
 		        // Check that the login message is correct
-		       /* //if (! login.startsWith ("USER")) {
+		        if (! login.startsWith ("USER")) {
 		            // Disconnect the client if there is an error
-		        //	writeMsg("400 Invalid Package received");
+		        writeMsg("400 Invalid Package received");
 		            
-		            //connected = false;
-		        //} else {
+		            connected = false;
+		        } else {
 		            // Check that the size of the nick is not too long
-		            if (login.split ("[]") [1] .length () >= 12) {
+		            if (login.split (":") [1] .length () >= 12) {
 		                // Send an error and disconnect the user
 		            	writeMsg ("400 The username chosen is too long, enter a username of a maximum of 12 characters");
 		                
@@ -75,13 +79,13 @@ import servidor.Sala;
 		                // Connect to the client if the user does not exist in the room
 		                connected =! testChatRoom.existsUser(this);
 		            }
-		        }*/
+		        }
 		        // If everything is correct, it connects to the room
-		      // /if (connected) {
+		      if (connected) {
 		            // We get the nick received from the client
 		            connected =true;
-		            //username = login.split ("[]") [1];
-		            System.out.println(username);
+		            username = login.split (":") [1];
+		            System.out.println(login);
 		            // We connect the user to the room
 		            writeMsg (testChatRoom.enter(this));
 		            // We send the list of users of the room
@@ -106,8 +110,8 @@ import servidor.Sala;
 		            writeMsg ("400 You have been disconnected from the chat");
 		            
 		            // The client is no longer connected, we take him out of the room
-		             testChatRoom.exit (this);
-		        //}
+		             //testChatRoom.exit (this);
+		      }
 		    }
 
 			
@@ -385,41 +389,115 @@ import servidor.Sala;
 	                }
 	               //bw.write ("=========================");
 	                //bw.flush();
-			} else if (msg.startsWith ("Join")) {// Request to enter an existing room
-	            System.out.println("I am here");
-				String [] p;
-	            p = msg.split (":");
-	            System.out.println(p);
+			} else if (msg.startsWith("J")) { //Petición de entrada a una sala existente
+	            String[] p;
+	            p = msg.split(":");
 	            
-	            if (p.length> 3) {
-	                writeMsg ("500 Incorrect Syntax");
-	             } else {
-	                // We check that the room exists
-	                if (Server.existRoom(new testChatRoom (p [1]))) {
-	                    // Check that the user is not banned from the room
+	            if (p.length > 3) {
+	            	writeMsg("500 Sintaxis incorrecta");
+	                
+	            } else {
+	                //Comprobamos que la sala existe
+	                if (Server.existRoom(new testChatRoom(p[1]))) {
 	                  
-	                        // Received 1 parameter (room name)
+	                    
+	               // 	Received 1 parameter (room name)
 	                        if (p.length == 2) {
-	                            // We get the room from the name
-	                            testChatRoom sl = Server.getRooms (p [1]);
-	                            // If you have a password, we indicate that you can not enter without specifying it
-	                             // If you do not have a password, we enter the room
-	                                // We take the user out of the current room
-	                                testChatRoom.exit (this);
-	                                // We put it in the new room
-	                                testChatRoom.enter (this);
-	                                // We change the room in the user
+	                            //Obtenemos la sala a partir del nombre
+	                            testChatRoom sl = Server.getRooms(p[1]);
+	                            //Si tiene contraseña, indicamos que no puede entrar sin especificarla
+	                            //Si no tiene contraseña, entramos a la sala
+	                                //Sacamos al usuario de la sala actual
+	                                testChatRoom.exit(this);
+	                                //Lo metemos en la nueva sala
+	                                sl.enter(this);
+	                                //Cambiamos la sala en el usuario
 	                                testChatRoom = sl;
-	                                // We send the name of the room
-	                                writeMsg ("ROOM" + testChatRoom.getName ());
-	                                // We update the list of users for all users of the room
+	                                //Enviamos el nombre de la sala
+	                                writeMsg("SALA " + testChatRoom.getName());
+	                                //Actualizamos el listado de usuarios para todos los usuarios de la sala
 	                                testChatRoom.updateListedUsers();
-	                            }
-	                        } else {// There is no room
-			                	writeMsg ("500 There is no room called" + p[1]);
-	                    } 
-	                } 
+	                           
+	                        } 
+	                     
+	                } else { //No existe la sala
+	                	writeMsg("500 There is no room called " + p[1]);
+	                }
+	            }
+	        }else if (msg.startsWith ("Create")) {// Request to create a new room
+	                   String [] p;
+	                   p = msg.split (":");
+	                   
+	                   if (p.length> 3) {
+	                	   writeMsg ("500 Incorrect Syntax");
+	                       
+	                   } else {
+	                       // We check that the room does not exist
+	                       if (! Server.existRoom (new testChatRoom (p [1]))) {
+	                           testChatRoom sl = null;
+	                           // Room without password (1 parameter)
+	                           if (p.length == 2) {
+	                               // We created the room
+	                               sl = new testChatRoom (p [1]);
+	                           }/* else if (p.length == 3) {// Room with password (2 parameters)
+	                               // We created the room
+	                               sl = new testChatRoom (p [1], p [2]);
+	                           }*/
+	                           if (sl!= null) {
+	                               // We add the room to the list of rooms
+	                               Server.addRoom (sl);
+	                               // We take the user out of the current room
+	                               testChatRoom.exit (this);
+	                               // We put it in the new room
+	                               sl.enter (this);
+	                               // We change the room in the user
+	                               testChatRoom = sl;
+	                               // We send the name of the new room to the user
+	                               writeMsg ("ROOM" + sl.getName ());
+	                               // We update the list of users for all users of the room
+	                               testChatRoom.updateListedUsers();
+	                           }
+	                       } else {
+	                    	   writeMsg ("500 already exists a room with that name");
+	                       }
+	                   }
+	               }else if (msg.startsWith("L")) { //Petición de entrada a una sala existente
+	   	            String[] p;
+		            p = msg.split(":");
+		            
+		            if (p.length > 3) {
+		            	writeMsg("500 Sintaxis incorrecta");
+		                
+		            } else {
+		                //Comprobamos que la sala existe
+		                if (Server.existRoom(new testChatRoom(p[1]))) {
+		                  
+		                    
+		               // 	Received 1 parameter (room name)
+		                        if (p.length == 2) {
+		                            //Obtenemos la sala a partir del nombre
+		                            testChatRoom sl = Server.getRooms(p[1]);
+		                            //Si tiene contraseña, indicamos que no puede entrar sin especificarla
+		                            //Si no tiene contraseña, entramos a la sala
+		                                //Sacamos al usuario de la sala actual
+		                                testChatRoom.exit(this);
+		                                //Lo metemos en la nueva sala
+		                               // sl.enter(this);
+		                                //Cambiamos la sala en el usuario
+		                               // testChatRoom = sl;
+		                                //Enviamos el nombre de la sala
+		                                //("SALA " + testChatRoom.getName());
+		                                //Actualizamos el listado de usuarios para todos los usuarios de la sala
+		                                testChatRoom.updateListedUsers();
+		                           
+		                        } 
+		                     
+		                } else { //No existe la sala
+		                	writeMsg("500 There is no room called " + p[1]);
+		                }
+		            }
 	               }
+
 	            }
  	
 		
@@ -513,7 +591,7 @@ import servidor.Sala;
 
 	public void sendUserList () {
         StringBuilder strb = new StringBuilder ();
-        strb.append ("LIST");
+        strb.append ("LIST:");
         for (ClientThread usr:testChatRoom.getUsers()) {
             strb.append (usr.getUsername ());
             strb.append ("");
