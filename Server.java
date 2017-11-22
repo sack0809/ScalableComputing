@@ -181,11 +181,13 @@ public class Server {
 			  
 		  }
 	}
+	
+	
 
 	public   static void addRoom(testChatRoom s) {
 	      if (getRooms (s.getName ()) == null) {
 	            ListRooms.add(s);
-	      System.out.println (s.getName ()+" "+ "chatroom  created" );
+	      //System.out.println (s.getName ()+" "+ "chatroom  created" );
 	      }
 	 }      
 	         
@@ -204,6 +206,19 @@ public class Server {
 	   }
 	   return s;
 	    	}
+	 
+	 public   static int getRoomRef(testChatRoom s) {
+		int roomRef=0;
+		 for (int i = 0; i <ListRooms.size (); i ++) {
+	            if (ListRooms.get (i) .getName (). equalsIgnoreCase (s.getName ())) {
+	               roomRef=ListRooms.indexOf(s) ;
+	               //=s;
+	              //System.out.println (roomRef);
+	            }
+	        }
+		 return roomRef;
+	    }
+	 
 	 public   static boolean existRoom(testChatRoom s) {
 			for (int i = 0; i <ListRooms.size (); i ++) {
 	            if (ListRooms.get (i) .getName (). equalsIgnoreCase (s.getName ())) {
@@ -212,7 +227,12 @@ public class Server {
 	        }
 			return false;
 		}
-	
+	public static int joinId() {
+		int joinId;
+		joinId=new Random().nextInt(6)+1;
+		
+	return joinId;
+	}
 }
 
 	
