@@ -165,18 +165,18 @@ public class Server {
 		ServerSocket serverSocket = new ServerSocket(portNumber);
 		System.out.println("Server has been initialized with port"+portNumber);
 		testChatRoom Main=new testChatRoom("Main");
-		testChatRoom Room1=new testChatRoom("Room1");
+		//testChatRoom Room1=new testChatRoom("Room1");
 		  addRoom(Main);
 		  
-		  addRoom(Room1);
-		  System.out.println("Entering WHILE LOOP for making connection");
+		  //addRoom(Room1);
+		  ///System.out.println("Entering WHILE LOOP for making connection");
 		  while(true) {
 			  
 			  //We create a new instance by passing the socket and the main room
 			  Socket socket = serverSocket.accept(); 
 		//Server server = new Server(portNumber);
 		//server.start();
-			  System.out.println("Client Thread Has been Called");
+			  //System.out.println("Client Thread Has been Called");
 			  new Thread(new ClientThread(socket, Main)).start();
 			  
 		  }
