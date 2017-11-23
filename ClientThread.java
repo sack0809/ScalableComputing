@@ -10,11 +10,11 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Random;
 
-import servidor.Log;
-import servidor.Sala;
-import servidor.Servidor;
+
 
 
 
@@ -40,6 +40,7 @@ import servidor.Servidor;
 		private testChatRoom testChatRoom;
 		private boolean connected;
 		private SimpleDateFormat sdf;
+		private int joinId;
 
 		public ClientThread(String username) {
 	        this.username = username;
@@ -47,8 +48,8 @@ import servidor.Servidor;
 		
 		public ClientThread(Socket s, testChatRoom testChatRoom) throws IOException {
 	        this.testChatRoom = testChatRoom;
-	        socket=s;
-	       // this.username=;	
+	        this.socket=s;
+	       this.username=username;
 	        //this.loginTime = System.currentTimeMillis();
 	        //this.IP = s.getInetAddress().getHostAddress();
 	        //this.ping = 0;
@@ -56,7 +57,18 @@ import servidor.Servidor;
 	        //this.heartBeatOn = true;
 	        br = new BufferedReader(new InputStreamReader(s.getInputStream()));
 	        bw = new BufferedWriter(new PrintWriter(s.getOutputStream()));
+	        this.joinId=new Random().nextInt(6)+1;
 	    }
+		
+		/*public static int joinId() {
+			int joinId;
+			ArrayList<Integer> al = new ArrayList<Integer>(); 
+			joinId=new Random().nextInt(6)+1;
+			al.add(joinId);
+			
+			
+		return joinId;
+		}*/
 		
 		public  String isOnline() {
 			   // boolean b = true;
@@ -112,7 +124,7 @@ import servidor.Servidor;
 		            // We get the nick received from the client
 		            connected =true;
 		            username = login.split (":") [1];
-		            System.out.println(login);
+		            
 		            // We connect the user to the room
 		            writeMsg (testChatRoom.enter(this));
 		            // We send the list of users of the room
@@ -122,6 +134,7 @@ import servidor.Servidor;
 		            writeMsg ("ROOM" + testChatRoom.getName ());
 		            
 		            // Loop that will last until the user disconnects (EXIT or errors)
+		                 
 		            do {
 		                // We are waiting to receive a message from the client
 		                String packet = recieveMsg ();
@@ -397,7 +410,7 @@ import servidor.Servidor;
 			return true;
 		}*/
 		
-		private void analyzeMessage(String msg) {
+		private void analyzeMessage(String msg)  {
 			 
 			if  (msg.equalsIgnoreCase ("LISTROOMS")) {// Request for a list of available rooms
 	                // We obtain an array of strings with the names of the rooms
@@ -448,34 +461,32 @@ import servidor.Servidor;
                         writeMsg ("SERVER_IP:0");
                         writeMsg ("PORT: 0 " );
                         writeMsg ("ROOM_REF:" + Server.getRoomRef (sl));
-                        writeMsg ("JOIN_ID:" + Server.joinId() );
+                        writeMsg ("JOIN_ID:" +this.joinId);
                         // We update the list of users for all users of the room
                         testChatRoom.updateListedUsers();
                     }
                 }  else 
-	                //Comprobamos que la sala existe
+	              
 	                 {
-	               // 	Received 1 parameter (room name)
+	                	
 	                        if (p.length == 2) {
-	                            //Obtenemos la sala a partir del nombre
+	                            
 	                            testChatRoom sl = Server.getRooms(p[1]);
-	                            //Si tiene contraseña, indicamos que no puede entrar sin especificarla
-	                            //Si no tiene contraseña, entramos a la sala
-	                                //Sacamos al usuario de la sala actual
+	                            
 	                                testChatRoom.exit(this);
-	                                //Lo metemos en la nueva sala
+	                                
 	                                sl.enter(this);
-	                                //Cambiamos la sala en el usuario
+	                                
 	                                testChatRoom = sl;
 	                                writeMsg ("JOINED_CHATROOM:" + sl.getName ());
 	                                writeMsg ("SERVER_IP:0");
 	                                writeMsg ("PORT: 0 " );
 	                                writeMsg ("ROOM_REF:" + Server.getRoomRef (sl));
-	                                writeMsg ("JOIN_ID:" + Server.joinId() );
+	                                writeMsg ("JOIN_ID:" + this.joinId );
 	                                
-	                                //Enviamos el nombre de la sala
+	                               
 	                                writeMsg("Room Name " + testChatRoom.getName());
-	                                //Actualizamos el listado de usuarios para todos los usuarios de la sala
+	                                
 	                                testChatRoom.updateListedUsers();
 	                           
 	                        } 
@@ -528,41 +539,66 @@ import servidor.Servidor;
 		            	writeMsg("500 Sintaxis incorrecta");
 		                
 		            } else {
-		                //Comprobamos que la sala existe
+		               
 		                if (Server.existRoom(new testChatRoom(p[1]))) {
 		                  
 		                    
 		               // 	Received 1 parameter (room name)
 		                        if (p.length == 2) {
-		                            //Obtenemos la sala a partir del nombre
+		                           
 		                            testChatRoom sl = Server.getRooms(p[1]);
-		                            //Si tiene contraseña, indicamos que no puede entrar sin especificarla
-		                            //Si no tiene contraseña, entramos a la sala
-		                                //Sacamos al usuario de la sala actual
+		                            
+		                            writeMsg("LEFT_CHATROOM:"+Server.getRoomRef(sl));
+		                            writeMsg("JOIN_ID:"+this.joinId);
 		                                testChatRoom.exit(this);
-		                                //Lo metemos en la nueva sala
-		                               // sl.enter(this);
-		                                //Cambiamos la sala en el usuario
-		                               // testChatRoom = sl;
-		                                //Enviamos el nombre de la sala
-		                                //("SALA " + testChatRoom.getName());
-		                                //Actualizamos el listado de usuarios para todos los usuarios de la sala
-		                                testChatRoom.updateListedUsers();
+		                                
+		                                
+		                            testChatRoom.updateListedUsers();
 		                           
 		                        } 
 		                     
-		                } else { //No existe la sala
+		                } else { 
 		                	writeMsg("500 There is no room called " + p[1]);
 		                }
 		            }
-	               }else if(msg.startsWith("Chat"))
+	               }else if(msg.startsWith("CHAT"))
+	            	   
 	               {
-	            	   testChatRoom.broadcast("Message from Client1"+msg);
+	            	         String[] p;
+			            p = msg.split(":");
+			            String temp=p[1];
+			            int temp1 = Integer.parseInt(temp);
+			          if(Server.getRoomName(temp1)) {
+	            	 
+	            	   testChatRoom.broadcast("CHAT:"+temp);
+	            	   testChatRoom.broadcast("CLIENT_NAME:" +this.username);
+	            	   testChatRoom.broadcast("MESSAGE:");
+	            	   }	else {
+	            		   writeMsg("Room doesn't exists");
+	            	   }	  
 	               }
 	               else if(msg.startsWith("HELO BASE_TEST"))
 	               {
 	            	   isOnline();
 	               }
+	               else if(msg.startsWith("DISCONNECT"))
+	               {
+	            	   
+	            	   testChatRoom.broadcast(this.username+" "+"Has Been Disconnected from Server ");
+	            	   //connected = false;
+	               }
+	               else if (msg.startsWith("KILL SERVICE")) {
+	            	           writeMsg("Shutting down the server");
+	            	           
+	            	           
+	            	        	        
+								//close();
+								Server.close();
+								System.exit(0);
+								
+							
+	               }
+			
 	            }
  	
 		
@@ -570,10 +606,10 @@ import servidor.Servidor;
 
 		public void writeMsg(String msg) {
 			// if Client is still connected send the message to it
-			//if(!socket.isConnected()) {
-				//close();
+			if(!socket.isConnected()) {
+				close();
 				
-			//}
+			}
 			// write the message to the stream
 			try {
 				bw.write(msg + "\n");
@@ -597,10 +633,10 @@ import servidor.Servidor;
 			// if Client is still connected send the message to it
 			
 			String msg="";
-			//if(!socket.isConnected()) {
-				//close();
-				
-			//}
+			if(!socket.isConnected()) {
+				close();
+				return msg;
+			} else {
 			// write the message to the stream
 			
 				try {
@@ -613,7 +649,7 @@ import servidor.Servidor;
 			
 			// if an error occurs, do not abort just inform the user
 			   return msg;
-			
+			}
 		}
 		private void close() {
 			// try to close the connection
