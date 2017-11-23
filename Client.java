@@ -129,14 +129,14 @@ public class Client  {
 		
 	}
 	
-	void sendMessage(ChatMessage msg) {
+	/*void sendMessage(ChatMessage msg) {
 		try {
 			sOutput.writeObject(msg);
 		}
 		catch(IOException e) {
 			display("Exception writing to server: " + e);
 		}
-	}
+	}*/
 
 	/*
 	 * When something goes wrong
@@ -233,7 +233,7 @@ public class Client  {
 		
 		// loop forever for message from the user
 		while(true) {
-			System.out.print("> ");
+			//System.out.print("> ");
 			// read message from u
 			String msg = scan.nextLine();
 			
@@ -257,6 +257,7 @@ public class Client  {
 				client.sendmessage("CLIENT_NAME:" +userName);
 				
 			}else if(msg.startsWith("LEAVE")) {
+				     
 				client.sendmessage("LEAVE_CHATROOM:ROOM1");
 				client.sendmessage("JOIN_ID:");
 				client.sendmessage("CLIENT_NAME:"+userName);
@@ -264,15 +265,32 @@ public class Client  {
 			else if(msg.equalsIgnoreCase("CREATE")) {
 				client.sendmessage("Create:Room1");				
 			}
-			else if(msg.equalsIgnoreCase("CHAT")) {
-				client.sendmessage("Chat starts");				
+			else if(msg.equalsIgnoreCase("KILL")) {
+				client.sendmessage("KILL SERVICE \n");
+				break;
+			}
+			else if(msg.equalsIgnoreCase("MESSAGE")) {
+				//msg=scan.nextLine();
+				client.sendmessage("CHAT:1");
+				client.sendmessage("JOIN ID:");
+				client.sendmessage("CLIENT_NAME:"+userName);
+				client.sendmessage("MESSAGE:");
+				
+			}
+			else if(msg.equalsIgnoreCase("DISCONNECT")) {
+				//msg=scan.nextLine();
+				client.sendmessage("DISCONNECT:0");
+				client.sendmessage("PORT:0");
+				client.sendmessage("CLIENT_NAME:"+userName);
+				break;
+				
 			}
 			else {				// default to ordinary message
 				client.sendmessage("Client: I am in this Room");
 			}
 		}
 		// done disconnect
-		//client.disconnect();	
+		client.disconnect();	
 	}
 
 	/*
@@ -284,10 +302,15 @@ public class Client  {
 		public void run() {
 			while(true) {
 				try {
-					String msg = br.readLine();
+					
+					String msg = br.readLine();	
+					if(msg==null)
+					{
+						break;
+					}
 					// if console mode print the message and add back the prompt
 					System.out.println(msg);
-					System.out.print("> ");
+					//System.out.print("> ");
 					/*if(cg == null) {
 						System.out.println(msg);
 						System.out.print("> ");
