@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-import servidor.Usuario;
+
 
 public class testChatRoom {
 
@@ -15,7 +15,8 @@ public class testChatRoom {
 		   //this.users = new ArrayList <> ();
 		// this.banned = new ArrayList <> ();
 		   }
-	
+	  
+	   
 	
 	  public String getName () {
               return this.name;
@@ -74,27 +75,10 @@ public class testChatRoom {
 	        return false;
 	    }
 	  
-	  /*public  boolean existsUser ( ClientThread u) {
-          for (ClientThread usr: users) {
-              if (usr!=null && usr.getUsername() != null && usr.getUsername (). equalsIgnoreCase (u.getUsername ())) {
-                  return true;
-              }
-          }
-          return false;
-      }*/
+
 	  
 	  
-	/*  public static void updateListedUsers () {
-          for (ServerHandler usr: users) {
-        	      System.out.println(usr.username);
-              usr.sendUserList ();
-          }
-      }
-	  public static void broadcast (String message) {
-          for (ServerHandler usr: users) {
-              usr.sendMessage (message);
-          }
-      }*/
+
 	  public ArrayList<ClientThread> getUsers () {
           return users;
       }
