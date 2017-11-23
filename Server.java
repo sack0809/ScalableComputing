@@ -3,7 +3,7 @@ import java.net.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import servidor.Usuario;
+
 
 /*
  * The server that can be run both as a console application or a GUI
@@ -21,11 +21,11 @@ public class Server {
 	private static String IP;
 	// the boolean that will be turned of to stop the server
 	private boolean keepGoing;
-	ServerHandler serverHandler;
+	private static ServerSocket serverSocket;
 	//HashMap <ChatRoomTest, Integer> hmap;
 	private String Address;
     public static ArrayList <testChatRoom> ListRooms = new ArrayList<testChatRoom>();
-	
+	private int roomRef=0;
     /*public Server(int port ) {
 		Server.port = port;
 		sdf = new SimpleDateFormat("HH:mm:ss");
@@ -182,7 +182,19 @@ public class Server {
 		  }
 	}
 	
-	
+	public static void close()
+	{
+		try {
+			if (null != serverSocket) {
+				serverSocket.close();
+			}
+		
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace(System.err);
+		}
+		Thread.currentThread().interrupt();
+	}
 
 	public   static void addRoom(testChatRoom s) {
 	      if (getRooms (s.getName ()) == null) {
@@ -212,12 +224,22 @@ public class Server {
 		 for (int i = 0; i <ListRooms.size (); i ++) {
 	            if (ListRooms.get (i) .getName (). equalsIgnoreCase (s.getName ())) {
 	               roomRef=ListRooms.indexOf(s) ;
-	               //=s;
-	              //System.out.println (roomRef);
+	                
 	            }
 	        }
 		 return roomRef;
 	    }
+	 
+	 public static boolean getRoomName(int i) {
+		 
+	 if (i<=ListRooms.size()) {
+		     
+		     return true;
+	 }
+	return false;
+	  }
+	 
+	 
 	 
 	 public   static boolean existRoom(testChatRoom s) {
 			for (int i = 0; i <ListRooms.size (); i ++) {
@@ -227,12 +249,7 @@ public class Server {
 	        }
 			return false;
 		}
-	public static int joinId() {
-		int joinId;
-		joinId=new Random().nextInt(6)+1;
-		
-	return joinId;
-	}
+	
 }
 
 	
