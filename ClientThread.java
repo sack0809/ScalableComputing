@@ -274,7 +274,7 @@ import java.util.Random;
 	            	 
 	            	   testChatRoom.broadcast("CHAT:"+Server.getRoomRef(sl));
 	            	   testChatRoom.broadcast("CLIENT_NAME:" +this.username);
-	            	   testChatRoom.broadcast("MESSAGE:");
+	            	   testChatRoom.broadcast("MESSAGE:"+"hello world from"+" "+this.username);
 	            	   
 	               }
 	               else if(msg.startsWith("HELO BASE_TEST"))
@@ -297,6 +297,8 @@ import java.util.Random;
 								System.exit(0);
 								
 							
+	               }else {
+	            	   writeMsg("ERROR CODE 400");
 	               }
 			
 	            }
