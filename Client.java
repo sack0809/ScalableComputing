@@ -191,7 +191,7 @@ public class Client  {
 	 */
 	public static void main(String[] args) {
 		// default values
-		int portNumber = 1500;
+		int portNumber = 2150;
 		String serverAddress = "localhost";
 		String userName = "Anonymous";
 
@@ -258,9 +258,15 @@ public class Client  {
 				
 			}else if(msg.startsWith("LEAVE")) {
 				     
-				client.sendmessage("LEAVE_CHATROOM:ROOM1");
+				client.sendmessage("LEAVE_CHATROOM:1");
 				client.sendmessage("JOIN_ID:");
 				client.sendmessage("CLIENT_NAME:"+userName);
+			}
+			
+			else if(msg.startsWith("CLIENT_NAME")) {
+			     
+				client.sendmessage("CLIENT_NAME:"+userName);
+				
 			}
 			else if(msg.equalsIgnoreCase("CREATE")) {
 				client.sendmessage("Create:Room1");				
@@ -310,14 +316,8 @@ public class Client  {
 					}
 					// if console mode print the message and add back the prompt
 					System.out.println(msg);
-					//System.out.print("> ");
-					/*if(cg == null) {
-						System.out.println(msg);
-						System.out.print("> ");
-					}
-					else {
-						cg.append(msg);
-					}*/
+					
+					
 				}
 				catch(IOException e) {
 					display("Server has close the connection: " + e);
