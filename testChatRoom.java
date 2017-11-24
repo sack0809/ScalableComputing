@@ -4,16 +4,14 @@ import java.util.ArrayList;
 
 public class testChatRoom {
 
-	private  String name;
-	private  ArrayList <ClientThread> users;
+	public  String name;
+	public  ArrayList <ClientThread> users;
 	
 	 
 	   public testChatRoom (String name) {
 		   this.name = name;
 		   this.users = new ArrayList <> ();
-		   //this.password = "";
-		   //this.users = new ArrayList <> ();
-		// this.banned = new ArrayList <> ();
+		
 		   }
 	  
 	   
@@ -32,15 +30,15 @@ public class testChatRoom {
 			  u.setConnected (true);
 			  
 			 users.add(u);
-			 broadcast (u.getUsername ()+"  " + "entered the room" +" "+ this.getName());
+		     broadcast (u.getUsername ()+"  " + "entered the room" +" "+ this.getName());
 			 
 			  updateListedUsers ();
-			  u.sendMessage ("RoomName"+" "+	this.getName());
+			  //u.sendMessage ("RoomName"+" "+	this.getName());
 		  } else {
 	             // We disconnect the user
 	             u.setConnected (false);
 	             return "400 The user is already in the room";
-		  }
+		 }
 		  return "ok";
 		  
 	  }
@@ -50,10 +48,8 @@ public class testChatRoom {
 		  
 		  //System.out.println(u.getUsername());
 		if (existsUser(u)) {// We remove it from the user list of the
-			//System.out.println(" getting in ");
-			//System.out.println(u.getUsername());
-			//System.out.println(getUsers ());
-			broadcast(u.getUsername()+"  " +"to come out of the room"+" "+ this.getName());
+			
+			//broadcast(u.getUsername()+"  " +"to come out of the room"+" "+ this.getName());
 			users.remove (u);
 			
 		// We spread the outgoing message to all members of the room broadcast 
@@ -61,7 +57,8 @@ public class testChatRoom {
 		// We send the updated list of users to all the users of the room 
 		 updateListedUsers (); 
 		
-		}}
+		}
+	  }
 
 	  
 	  public boolean existsUser(ClientThread u) {
