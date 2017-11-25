@@ -30,7 +30,7 @@ public class testChatRoom {
 			  u.setConnected (true);
 			  
 			 users.add(u);
-		     broadcast (u.getUsername ()+"  " + "entered the room" +" "+ this.getName());
+		     //broadcast (u.getUsername ()+"  " + "entered the room" +" "+ this.getName());
 			 
 			  updateListedUsers ();
 			  //u.sendMessage ("RoomName"+" "+	this.getName());
@@ -51,6 +51,7 @@ public class testChatRoom {
 			
 			//broadcast(u.getUsername()+"  " +"to come out of the room"+" "+ this.getName());
 			users.remove (u);
+			//u.writeMsg("CHAT:"+1+"\n");
 			
 		// We spread the outgoing message to all members of the room broadcast 
 		 //broadcast(u.getUsername()+"  " +"to come out of the room"+" "+ this.getName()); 
