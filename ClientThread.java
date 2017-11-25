@@ -86,7 +86,7 @@ import java.util.Random;
 			connected=true;
 		        // Wait to receive the client login message
 		        String login = recieveMsg ();
-		        //System.out.println("Message received from client is "+login);
+		        System.out.println("Message received from client is "+login);
 		        // Check that the login message is correct
 		       if (! login.startsWith ("USER")) {
 		            
@@ -124,7 +124,7 @@ import java.util.Random;
 		            do {
 		                // We are waiting to receive a message from the client
 		                String packet = recieveMsg ();
-		                System.out.println("MESSAGE from Client"+packet);
+		                System.out.println("MESSAGE FROM CLIENT"+packet);
 		                // If the package is not empty, we analyze it
 		                if (packet != null &&! packet.isEmpty ()) {
 		                	     
@@ -174,7 +174,8 @@ import java.util.Random;
 	               //bw.write ("=========================");
 	                //bw.flush();
 			} else if (msg.startsWith("JOIN_CHATROOM")) {
-	            String[] p;
+	            System.out.println(msg);
+				String[] p;
 	            p = msg.split(":");
 	            
 	            if (p.length > 3) {
@@ -212,7 +213,8 @@ import java.util.Random;
                         
                         testChatRoom.updateListedUsers();
                         
-                        
+                        testChatRoom.broadcast("CHAT:"+Server.getRoomRef(sl)+"\n"+"CLIENT_NAME:"+this.username+"\n"+"MESSAGE:"+this.username+ "has join this chatroom"+"\n");
+
                         
                         
                         
@@ -237,7 +239,7 @@ import java.util.Random;
 	                               
 	                                
 	                                testChatRoom.updateListedUsers();
-	                                testChatRoom.broadcast("CHAT:"+Server.getRoomRef(sl)+"\n"+"CLIENT_NAME:"+this.username+"\n"+"MESSAGE:"+this.username+ "has joined this chatroom");
+	                                testChatRoom.broadcast("CHAT:"+Server.getRoomRef(sl)+"\n"+"CLIENT_NAME:"+this.username+"\n"+"MESSAGE:"+this.username+ "has joined this chatroom"+"\n");
 	                               
 	                           
 	                        } 
@@ -246,7 +248,7 @@ import java.util.Random;
 	            }
 	        }
 			
-			else if (msg.startsWith("LEAVE_CHATROOM")) { 
+			else if (msg.startsWith("LEAVE_CHATROOM") ) { 
 	   	           System.out.println(msg); 
 	            	   String[] p;
 		            p = msg.split(":");
@@ -255,9 +257,11 @@ import java.util.Random;
 		            String sp=Server.getRoomName(temp1);
 		            testChatRoom sl = Server.getRooms(sp);
 		            writeMsg("LEFT_CHATROOM:"+Server.getRoomRef(sl)+"\n"+"JOIN_ID:"+this.joinId	);
+		            testChatRoom.broadcast("CHAT:"+Server.getRoomRef(sl)+"\n"+"CLIENT_NAME:"+this.username+"\n"+"MESSAGE:"+this.username+ "has left  this chatroom"+"\n");
+
                     testChatRoom.exit(this);
                      testChatRoom.updateListedUsers();
-		            
+                       
 		         
 		               
 		               
@@ -272,9 +276,7 @@ import java.util.Random;
 			            String sp=Server.getRoomName(temp1);
 			            testChatRoom sl = Server.getRooms(sp);
 	            	 
-	            	   testChatRoom.broadcast("CHAT:"+Server.getRoomRef(sl));
-	            	   testChatRoom.broadcast("CLIENT_NAME:" +this.username);
-	            	   testChatRoom.broadcast("MESSAGE:"+"hello world from"+" "+this.username);
+	            	   testChatRoom.broadcast("CHAT:"+Server.getRoomRef(sl)+"\n"+"CLIENT_NAME:" +this.username+"\n"+"MESSAGE:"+"hello world from"+" "+this.username+"\n");
 	            	   
 	               }
 	               else if(msg.startsWith("HELO BASE_TEST"))
@@ -285,14 +287,17 @@ import java.util.Random;
 	               {
 	            	   
 	            	   testChatRoom.broadcast(this.username+" "+"Has Been Disconnected from Server ");
+	            	   close();
 	            	   connected = false;
+	            	   
+	            	   
 	               }
 	               else if (msg.startsWith("KILL SERVICE")) {
 	            	           writeMsg("Shutting down the server");
 	            	           
 	            	           
 	            	        	        
-								//close();
+							
 								Server.close();
 								System.exit(0);
 								
@@ -368,13 +373,13 @@ import java.util.Random;
 		}
 		 	
 		public String getUsername() {
-			//System.out.println(username);
+			
 	        return username;
 	    }
 		public void setUsername(String username) {
-			//System.out.println("Setting the username as"+username);
+			
 			this.username=username;
-			//System.out.println("Setted the username as"+this.username);
+			
 			
 		}
 	
