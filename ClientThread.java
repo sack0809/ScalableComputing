@@ -297,8 +297,6 @@ import java.util.Random;
 								System.exit(0);
 								
 							
-	               }else {
-	            	   writeMsg("ERROR CODE 400");
 	               }
 			
 	            }
@@ -370,13 +368,13 @@ import java.util.Random;
 		}
 		 	
 		public String getUsername() {
-			System.out.println(username);
+			//System.out.println(username);
 	        return username;
 	    }
 		public void setUsername(String username) {
-			System.out.println("Setting the username as"+username);
+			//System.out.println("Setting the username as"+username);
 			this.username=username;
-			System.out.println("Setted the username as"+this.username);
+			//System.out.println("Setted the username as"+this.username);
 			
 		}
 	
