@@ -251,10 +251,10 @@ public class Client  {
 			}
 			else if(msg.startsWith("JOIN_CHATROOM")) {
 				  
-				client.sendmessage("JOIN_CHATROOM:ROOM1");
-				client.sendmessage("CLIENT_IP:");
-				client.sendmessage("PORT:");
-				client.sendmessage("CLIENT_NAME:" +userName);
+				client.sendmessage("JOIN_CHATROOM:ROOM1"+"\n"+"CLIENT_IP:0"+"\n"+"PORT:0"+"\n"+"CLIENT_NAME:" +userName);
+				//client.sendmessage("CLIENT_IP:");
+				//client.sendmessage("PORT:");
+				//client.sendmessage("CLIENT_NAME:" +userName);
 				
 			}else if(msg.startsWith("LEAVE")) {
 				     
@@ -284,10 +284,9 @@ public class Client  {
 				
 			}
 			else if(msg.equalsIgnoreCase("DISCONNECT")) {
-				//msg=scan.nextLine();
-				client.sendmessage("DISCONNECT:0");
-				client.sendmessage("PORT:0");
-				client.sendmessage("CLIENT_NAME:"+userName);
+				
+				client.sendmessage("DISCONNECT:0"+"\n"+"PORT:0"+"\n"+"CLIENT_NAME:"+userName);
+				
 				break;
 				
 			}
