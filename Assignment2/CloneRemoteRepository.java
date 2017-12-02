@@ -1,23 +1,13 @@
 
 
-/*
-   Copyright 2013, 2014 Dominik Stadler
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
- */
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,12 +33,7 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 
-/**
- * Snippet which shows how to use RevWalk and TreeWalk to read the contents
- * of a specific file from a specific commit.
- *
- * @author dominik.stadler at gmx.at
- */
+
 public class CloneRemoteRepository {
   
 	private static final String REMOTE_URL = "https://github.com/sack0809/ScalableComputing.git";
@@ -83,6 +68,8 @@ public class CloneRemoteRepository {
 	@SuppressWarnings("deprecation")
 	private static void listRepositoryContents(Repository repository) throws MissingObjectException, IncorrectObjectTypeException, CorruptObjectException, IOException, GitAPIException {
 		// TODO Auto-generated method stub
+		PrintStream out = new PrintStream(new FileOutputStream(
+		          "OutFile.txt"));
 		@SuppressWarnings("deprecation")
 		Git git = new Git(repository);
 		Ref head = repository.getRef("HEAD");
@@ -117,8 +104,10 @@ public class CloneRemoteRepository {
                                 TreeWalk treeWalk = new TreeWalk(repository);
                                 treeWalk.addTree(tree);
                                 treeWalk.setRecursive(false);
+                                out.println("Commit found: "+ commit.getName());
                                 while (treeWalk.next()) {
-                                    System.out.println("found: " + treeWalk.getPathString());
+                                   out.println("found: " +treeWalk.getPathString());
+                                    
                                 }
                                 break;
                             }
